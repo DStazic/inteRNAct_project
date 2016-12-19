@@ -12,18 +12,29 @@ split_reads = read.table("/Users/damirvana/Arbeit_Uni/Postdoc_AG_Voß/Sequenzier
 
 
 GeneIdentify=function(reference, split_reads) {
+'Annotate split reads according to start position (nt coordinate)
+
+reference = list with gene entries (here, E.coli DH10B)
+split reads = segemehl/ tophat SAM file containing split reads (contains start coordinate of split read)
+
+1. split reference list into sets of 100 genes (speeds up computation); (genes in ascending order for gene start/end coordinates)
+    -----> dividing the total set of gene entries into sets of 100 genes speeds up computation
+    -----> for each read (millions in total!!) loop over 1. (max)43 sets and over 2. (max)100 entries in one set instead of 4300 gene entries
+2. define min (start coordinate of first gene) and max (end coordiante of last gene) in each gene set list
+3. for each split read take start coordinate and check if within min/max boundaries of gene set list
+4. if min/max boundaries match, iterate over the genes in that gene set and check if split read within min/max boundaries of any of the genes
+5. reassign start position of split read to gene name'
+
+
+    
+    
 ######------------------------------------------------------------------------------------------------------
 # make a copy of the split_reads table for modifications  
 split_reads_copy=split_reads  
 
 ######------------------------------------------------------------------------------------------------------
 # split the reference list with all gene entries into sets of 100 genes (43 sets for E.coli DH10b)
-# reference list was initially sorted for gene start/end coordinates in ascending order 
-# calculate the min() and max() coordinate for all gene sets 
-# coordinate for each mapped read will be crosschecked if it is within any of the gene set min/max boundaries
-# loop over the correct gene set and reassign the mapped read start position to the corresponding gene annotation 
-'-----> dividing the total set of gene entries into sets of 100 genes speeds up computation'
-'-----> for each read (millions in total!!) loop over 1. (max)43 sets and over 2. (max)100 entries in one set instead of 4300 gene entries'
+
 
 split_reference_list=list()   
 split_reference_part=data.frame()^
@@ -36,10 +47,7 @@ for (i in 1:nrow(reference)) {
     split_reference_part=data.frame()
   }
 }
-# calculate min() and max() coordinate for all groups; this can be used if coordinates in split reads 
-# are within min()/max() bounderies of any of these groups. If TRUE then search only in this group for hit
-# here, first search in approx. 40 (list with min/max for every 100 genes set), then search in approx. 100 (list with sets of 100 genes). 
-# (In total 140 vs. 4300 (list with all genes) entries to check.
+# calculate min() and max() coordinate for all groups
 
 lower=c()
 upper=c()
@@ -55,6 +63,9 @@ colnames(gene_set.boundaries)=c("Coordinate_start","Coordinate_end")
 rownames(gene_set.boundaries)=names(split_reference_list)
 
 ######------------------------------------------------------------------------------------------------------
+# for each split read start position check to which gene set list it belongs
+# iterate over the genes and coresponding start/end coordinates in the gene set list and reassign start coordinate of split read to gene name
+
 
 summary_split_reads=data.frame()
 coord1_ref=c()

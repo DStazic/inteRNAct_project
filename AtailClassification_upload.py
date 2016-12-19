@@ -1,25 +1,26 @@
-#start at 3' end
-#if first kmer=100% ----> 3'A-tail
 
-#2. continue until next(second) kmer <100% ----->end(actually start) of 3'A-tail
-#3. continue until next(third) kmer=100% ----->start(actually end) of term.transf A-tail
-#4. continue until next kmer(fourth)<100% ----->end(actually start) of term.transf A-tail
-#5. if end of read is reached and third and fourth kmer=None-----> read belongs to 3'Atail class
-#   if end of read is reached and third and fourth kmer not None-----> read belongs to terminator transferase class
-
-#if first kmer<100% ----> potentially terminator transferase read
-
-#2. continue until next(second) kmer =100% ----->start(actually end) of term.transf A-tail
-#3. continue until next kmer(third)<100% ----->end(actually start) of term.transf A-tail
-#4. if end of read is reached and second and third kmer=None-------> read belongs to standard class
-#   if end of read is reached and second and third kmer not None-------> read belongs to terminator transferase class
-
-
-
-
-
-
-def AtailClassification(Path_fastQ_InQuotes,output_name_InQuotes,Atail_length=5,sep_="\t"):
+def AtailClassification(Path_fastQ_InQuotes,output_name_InQuotes,Atail_length=5):
+    '''Classify reads into potential interaction sites versus no interaction site (no proximity ligation)
+       Potential interaction sites contain internal 8-20nt A-tails 
+       
+       potential interaction site = NNNNAAAANNNN (N=any rRNA base) or NNNNAAAANNNNAAAA
+       no interaction site = NNNN or NNNNAAAA
+       
+       Path_fastQ_InQuotes = full path of fastQ file (use quotes for path in function)
+       output_name_InQuotes = name of output file (use quotes for file name in function)
+       Atail_length = kmer size; 5nt default
+       
+       
+       1. take fastQ file as input
+       2. extract the sequence for each read
+       3. define kmer size (nt length) and calculate A (Adenosine) percentage in kmer
+       4. start at 3'end of read and move kmer along the sequence by one nucleotide
+       5. for every subsequent position calculate A percentage in kmer
+       5.1  try to find following pattern = kmer: A% < 100 kmer: A% =100 kmer: A% < 100
+            --> potential interaction site
+       5.2  else no interaction site
+        '''
+    
     # generator to count the number of lines in input fastQ file
     # generate a list of lines to be skipped by pandas
     # thus, read only sequence lines from fastQ file
@@ -29,12 +30,12 @@ def AtailClassification(Path_fastQ_InQuotes,output_name_InQuotes,Atail_length=5,
     idx_skip_lines=[x for x in idx_all_lines if (x+3)%4 !=0]
     
     import pandas
-    Path_fastQ_InQuotes=str(Path_fastQ_InQuotes)
-    fastQ=pandas.read_csv(Path_fastQ_InQuotes, header=None,sep="\t", skiprows=idx_skip_lines)
-    output_name=open("/data/inteRNAct/raw/20160829/Term.Transf.Efficiency/"+str(output_name_InQuotes),"w")
+    
+    fastQ=pandas.read_csv(Path_fastQ_InQuotes, header=None, skiprows=idx_skip_lines)
+    output_name=open("/data/inteRNAct/raw/20160829/Term.Transf.Efficiency/"+output_name_InQuotes,"w")
     for e in fastQ[0]:
-        ### for Adapter trimmed reads check if first kmer is potentially solexa A-tail------------------------------
-        ### best take smaller kmer -5nt-for this initial step
+        ### check first kmer for ------------------------------
+        
         first_kmer=e[::-1][0:Atail_length]
         count_A_first_kmer=0
         for base_first_kmer in first_kmer:
@@ -89,7 +90,7 @@ def AtailClassification(Path_fastQ_InQuotes,output_name_InQuotes,Atail_length=5,
                 count_A=0
                 
                 if percent_next_kmer==100.0:
-                    # similar to 3'A-tail path
+                    # similar to no proximity ligation
                     # keep first kmer position of kmer=100%A --> this is the start position of the polyA tail
                     if end_Atail==None:
                         end_Atail=len(e)-iteration
