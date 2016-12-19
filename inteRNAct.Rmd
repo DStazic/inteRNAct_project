@@ -1,0 +1,29 @@
+---
+title: "inteRNAct project"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Analysis of NGS reads for inteRNAct project
+
+We started to develop a high-throughput, sequencing based method to identify RNA:RNA interactions experimentally. Importantly, our method will be applicable in vivo and in all domains of life. The essential steps combine direct cross-linking of RNA with a Psoralen derivative and ligation of custom made RNA/DNA adapter, which promises the detection of interaction sites with more precision than the recently established methods. 
+
+published methods:
+
+  1. Sharma E, Sterne-Weiler T, O‘Hanlon D, Blencowe BJ: Global Mapping of Human RNA-RNA interactions. Mol. Cell 2016, 19;62(4):618-26
+  2. JGA, Shen Y, Wilm A, Sun M, et al.: In Vivo Mapping of Eukaryotic RNA Interactomes Reveals Principles of HigherOrder Organization and Regulation. Mol. Cell 2016, 19;62(4):603-17
+  3. Lu Z, Zhang QC, Lee B,Flynn RA, Smith, MA, et al.: RNA Duplex Map in Living Cells Reveals Higher-Order Transcriptome Structure. Cell 2016, 19;165(5):1267-79
+
+### description of code used for analysis
+#### A-tail classification
+Classification of mapped NGS reads into potential interaction sites versus no interaction site according to location of A-tails that have been introduced
+by the activity of Terminal Transferase (for more details see desrciption in code)
+
+#### Check known interaction
+Annotation of mapped split reads according to the start coordinate (genome position); (for more details see desrciption in code)
+
+#### Homology search
+Search for homologous E.coli K12 sRNAs in E.coli DH10b. If intended for usage with species more distantly related, the code should be adapted because long sequence substrings are compared and no missmatches are allowed (for more details see desrciption in code)
