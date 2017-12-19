@@ -71,11 +71,9 @@ def AtailClassification(Path_fastQ_InQuotes,output_name_InQuotes,Atail_length=5)
                         end_internal_Atail=len(e)-iteration
             
             if start_internal_Atail==None:         #terminal transferase class
-                
                 output_name.write("no proximity ligation"+"\t"+"start:"+" "+str(start_Atail)+"\t"+"end:"+" "+str(len(e))+"\t"+str(e)+"\n")
-    else:
-        
-        output_name.write("no proximity ligation"+"\t"+"start:"+" "+str(start_internal_Atail)+"\t"+"end:"+" "+str(len(e))+"\t"+str(e)+"\n")
+            else:
+                output_name.write("no proximity ligation"+"\t"+"start:"+" "+str(start_internal_Atail)+"\t"+"end:"+" "+str(len(e))+"\t"+str(e)+"\n")
         ### potential interaction site -----------------------------------------------------------------------------
         elif percent_A_first_kmer<100.0:
             count_A=0
@@ -104,4 +102,4 @@ def AtailClassification(Path_fastQ_InQuotes,output_name_InQuotes,Atail_length=5)
                         output_name.write("Potential interaction site"+"\t"+"start:"+" "+str(start_Atail)+"\t"+"end:"+" "+str(end_Atail)+"\t"+str(e)+"\n")
                         break
                 else:
-                break
+                    break
